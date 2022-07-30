@@ -1,3 +1,3 @@
 # Airflow
 
-I created this repo in order to give examples on how to spin up an instance of airflow and have utilize several key functionalities of it.
+I created this repo in order to give examples on how to locally spin up an instance of Airflow and utilize several key functionalities.
