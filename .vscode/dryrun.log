@@ -1,6 +1,5 @@
+make --dry-run --always-make --keep-going --print-directory
 make: Entering directory `/Users/hector/Dropbox/Mac/Documents/repos/airflow'
- 
-make: *** No targets.  Stop.
-
+curl -LfO 'https://airflow.apache.org/docs/apache-airflow/2.3.3/docker-compose.yaml'
 make: Leaving directory `/Users/hector/Dropbox/Mac/Documents/repos/airflow'
  
