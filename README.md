@@ -18,4 +18,4 @@ In order to ramp up your Airflow environment for local learning and development,
 
 7. Now you're ready to get the fun stuff going! Clone this repo into your airflow-local folder and inside of the terminal, run: ```make run```. You will begin to see a bunch of wizardry happen that gets your airflow server up and running, all inside of a Docker container!
 
-8. 
+8. Open a browser and enter: ```http://localhost:8080/``` for the url, and enter airflow for username and password. Voila!
