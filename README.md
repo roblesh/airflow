@@ -12,7 +12,7 @@ In order to ramp up your Airflow environment for local learning and development,
 
 4. Create the folder where your code will be cloned to by using a shell/terminal/IDE to run: ```mkdir airflow-local```
 
-5. Create a python virtual environment for your airflow packages to not interfere with any other python development you may have. Inside of your new airflow-local folder, run: ```python3 -m venv .venv```, then ```source .venv/bin/activate```.
+5. Create a python virtual environment for your airflow packages to not interfere with any other python development you may have. Inside of your new airflow-local folder, run: ```python3 -m venv .venv```, and ```source .venv/bin/activate```.
 
 6. Then, ```pip install --upgrade pip``` and ```pip install apache-airflow```.
 
