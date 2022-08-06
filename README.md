@@ -10,4 +10,12 @@ In order to ramp up your Airflow environment for local learning and development,
 
 3. Install [Python3](https://www.python.org/downloads/macos/) on your machine.
 
-4. Run  mkdir and create 
+4. Create the folder where your code will be cloned to by using a shell/terminal/IDE to run: ```mkdir airflow-local```
+
+5. Create a python virtual environment for your airflow packages to not interfere with any other python development you may have. Inside of your new airflow-local folder, run: ```python3 -m venv .venv```
+
+6. Then, ```source .venv/bin/activate```.
+
+7. Now you're ready to get the fun stuff going! Clone this repo into your airflow-local folder and inside of the terminal, run: ```make run```. You will begin to see a bunch of wizardry happen that gets your airflow server up and running, all inside of a Docker container!
+
+8. 
