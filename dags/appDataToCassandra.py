@@ -1,3 +1,4 @@
+import uuid
 from airflow import DAG
 from datetime import datetime, timedelta
 from airflow.operators.bash import BashOperator
@@ -37,9 +38,11 @@ def transform(**context):
     data_from_api = task_instance.xcom_pull(task_ids='extract', 
                                             key='json_data'
                                             )
-    data_to_write = json.dumps(data_from_api)
+
+
+    tmp_file = json.dumps(data_from_api)
     with open("/tmp/api_data.json", "w") as data_file:
-        data_file.write(data_to_write)
+        data_file.write(tmp_file)
 
 
 def load(**context):
@@ -50,28 +53,23 @@ def load(**context):
     cluster = Cluster(['172.27.0.3'], port = 9042)
     session = cluster.connect('eth_eco')
 
-    for i in range(0, len(Eth_Eco_data['data'])):
+    for i in range(0, len(Eth_Eco_data)):
+        print("testing:" +str(Eth_Eco_data[i]["market_cap_rank"]) + "," +str(Eth_Eco_data[i]["price_change_percentage_24h"]) + " --- type: " + str(type(Eth_Eco_data[i]["market_cap_rank"])) + "," + str(type(Eth_Eco_data[i]["price_change_percentage_24h"])))
         session.execute(
         """
-        INSERT INTO eth_eco.eco_table (uuid, id, symbol, name, image, current_price, market_cap, market_cap_rank, fully_diluted_valuation, total_volume, high_24h, low_24h, price_change_24h, price_change_percentage_24h, market_cap_change_24h, market_cap_change_percentage_24h, circulating_supply, total_supply, max_supply, ath, ath_change_percentage, ath_date, atl, atl_change_percentage, atl_date, roi, last_updated, price_change_percentage_1h_in_currency)
-        VALUES (%s,%s, %s, %s, %s, %s, %s, %s, %s, %s,  %s )
-        """,(uuid1(), Eth_Eco_data['data'][i]["id"], Eth_Eco_data['data'][i]["symbol"], 
-        Eth_Eco_data['data'][i]["name"], Eth_Eco_data['data'][i]["image"], 
-        Eth_Eco_data['data'][i]["current_price"], Eth_Eco_data['data'][i]["market_cap"],
-        Eth_Eco_data['data'][i]["market_cap_rank"], Eth_Eco_data['data'][i]["fully_diluted_valuation"], 
-        Eth_Eco_data['data'][i]["total_volume"], Eth_Eco_data['data'][i]["high_24h"],
-        Eth_Eco_data['data'][i]["low_24h"], Eth_Eco_data['data'][i]["price_change_24h"],
-        Eth_Eco_data['data'][i]["price_change_percentage_24h"], Eth_Eco_data['data'][i]["market_cap_change_24h"], 
-        Eth_Eco_data['data'][i]["market_cap_change_percentage_24h"], Eth_Eco_data['data'][i]["circulating_supply"],
-        Eth_Eco_data['data'][i]["total_supply"], Eth_Eco_data['data'][i]["max_supply"],
-        Eth_Eco_data['data'][i]["ath"], Eth_Eco_data['data'][i]["ath_change_percentage"], 
-        Eth_Eco_data['data'][i]["ath_date"], Eth_Eco_data['data'][i]["atl"],
-        Eth_Eco_data['data'][i]["atl_change_percentage"], Eth_Eco_data['data'][i]["atl_date"],
-        Eth_Eco_data['data'][i]["roi"], Eth_Eco_data['data'][i]["last_updated"], 
-        Eth_Eco_data['data'][i]["price_change_percentage_1h_in_currency"],
+        INSERT INTO eth_eco.stats_table ("uuid", "id", "symbol", "name", "current_price", "market_cap", "market_cap_rank", "total_volume", "high_24h", "low_24h", "price_change_24h", "price_change_percentage_24h") 
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);""",
+        (uuid1().hex, Eth_Eco_data[i]["id"], Eth_Eco_data[i]["symbol"],
+            Eth_Eco_data[i]["name"], float(Eth_Eco_data[i]["current_price"]),
+            float(Eth_Eco_data[i]["market_cap"]), int(Eth_Eco_data[i]["market_cap_rank"]),
+            int(Eth_Eco_data[i]["total_volume"]), float(Eth_Eco_data[i]["high_24h"]),
+            float(Eth_Eco_data[i]["low_24h"]), float(Eth_Eco_data[i]["market_cap_rank"]),
+            float(Eth_Eco_data[i]["price_change_percentage_24h"])
+            )
         )
-        )
-        print("Done Sending : ->", Eth_Eco_data['data'][i])
+        print("Done Sending : ->", Eth_Eco_data[i])
+    
+    cluster.shutdown()
 
 extract = PythonOperator( 
     task_id="extract", 
@@ -94,6 +92,5 @@ load = PythonOperator(
     python_callable=load,
     dag=dag,
 )
-
 
 extract >> transform >> load
