@@ -38,9 +38,14 @@ def transform(**context):
     data_from_api = task_instance.xcom_pull(task_ids='extract', 
                                             key='json_data'
                                             )
+    data_from_api_edited = []
+    for entry in data_from_api:
+        for key in entry:
+            if key in ['uuid', 'id', 'symbol', 'name', 'current_price', 'market_cap', 'market_cap_rank', 'total_volume', 'high_24', 'low_24', 'price_change', 'price_change_percentage_24h']:
+                data_from_api_edited.append(entry[key])
 
-
-    tmp_file = json.dumps(data_from_api)
+    task_instance.xcom_push("json_data_edited", json.dumps(data_from_api_edited))
+    tmp_file = json.dumps(data_from_api_edited)
     with open("/tmp/api_data.json", "w") as data_file:
         data_file.write(tmp_file)
 
